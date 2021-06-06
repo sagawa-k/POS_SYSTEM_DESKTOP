@@ -1,0 +1,86 @@
+<html>
+    <head>
+        <title>posシステム</title>
+        <link rel="stylesheet" href="./style.css">
+    </head>
+    <body>
+        <h2>posシステム</h2>
+         <div class="regist_csv">
+          csv登録<input id="item_master_csv_name" type="text"></input><br/>
+          <button id="regist_item_master_csv">登録</button><br/>
+        </div>
+        <div class="add_order_section">
+          商品コード<input id="buy_item_code" type="text"></input><br/>
+          個数<input id="buy_item_count" type="text"></input>
+          <button id="add_order">登録</button><br/>
+          <button id="delete_order">最初からやり直す</button><br/>
+        </div>
+        <div>
+          <textarea id="add_order_result" class="log-view-area"></textarea>
+        </div>
+
+        <div class="sum_order_section">
+          <button id="sum_order">オーダー合計</button><br/>
+          <textarea id="sum_order_result" class="log-view-area"></textarea>
+        </div>
+
+        <div class="payment_section">
+          お預かり金<input id="payment_amount" type="text"></input><br/>
+          <button id="payment">精算</button><br/>
+        </div>
+        <div>
+          <textarea id="payment_result" class="log-view-area"></textarea>
+        </div>
+
+        <script type="text/javascript" src="./eel.js"></script>
+        <script>
+            regist_item_master_csv.addEventListener('click', () => {
+              eel.add_item_master(item_master_csv_name.value)
+              alert("商品の登録が完了しました。")
+            })
+
+            add_order.addEventListener('click', () => {
+              if (!buy_item_code.value.match(/\S/g) || !buy_item_count.value.match(/\S/g) ){
+                alert("検索ボックスが空です。入力してください。");
+                }
+              
+              eel.add_order(buy_item_code.value, buy_item_count.value)
+            })
+            eel.expose(view_buy_item)
+            function view_buy_item(text){
+              add_order_result.value += text + "\r"
+            }
+
+            delete_order.addEventListener('click', () => {
+              buy_item_code.value = ""
+              buy_item_count.value = ""
+              payment_amount.value = ""
+              add_order_result.value = ""
+              sum_order_result.value = ""
+              payment_result.value = ""
+              eel.add_item_master(item_master_csv_name.value)
+            })
+
+            sum_order.addEventListener('click', () => {
+              if(sum_order_result.value){ sum_order_result.value = "" }
+              eel.sum_order()
+            })
+            eel.expose(view_sum_order)
+            function view_sum_order(text){
+              sum_order_result.value += text + "\r"
+            }
+
+            payment.addEventListener('click', () => {
+              if (!payment_amount.value.match(/\S/g)){
+                alert("金額を入力してください。");
+                }
+              if(payment_amount.value){ payment_amount.value = "" }
+              eel.calc_money(payment_amount.value)
+            })
+            eel.expose(view_payment)
+            function view_payment(text){
+              payment_result.value += text + "\r"
+            }
+        </script>
+    </body>
+</html>
